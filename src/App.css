@@ -20,7 +20,9 @@ body {
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
+
 #colorBox {
   width: 200px;
   height: 150px;
@@ -74,4 +76,51 @@ body {
 .new-game-button:active {
   background-color: #000ff0;
   transform: scale(1);
+}
+
+
+@media (max-width: 768px) {
+  .game-container {
+    width: 90%;
+    padding: 15px;
+  }
+
+  #colorBox {
+    width: 150px;
+    height: 120px;
+  }
+
+  .color-option {
+    width: 80px;
+    height: 50px;
+  }
+
+  .new-game-button {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-container {
+    width: 95%;
+    padding: 10px;
+  }
+
+  #colorBox {
+    width: 120px;
+    height: 100px;
+  }
+
+  .color-option {
+    width: 70px;
+    height: 40px;
+  }
+
+  .new-game-button {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+  }
 }
