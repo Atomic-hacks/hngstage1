@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import "./App.css"; 
 
+/**
+ * Game configuration object defining different game modes and their parameters
+ */
 const GAME_MODES = {
   CLASSIC: {
     name: 'Classic',
@@ -22,18 +25,27 @@ const GAME_MODES = {
   }
 };
 
+/**
+ * Generates an array of random HSL colors
+ * @param {number} count - Number of colors to generate
+ * @returns {string[]} Array of HSL color strings
+ */
 const generateRandomColors = (count) => {
   const colors = [];
   for (let i = 0; i < count; i++) {
     const h = Math.floor(Math.random() * 360);
-    const s = Math.floor(Math.random() * 30) + 70; // 70-100%
-    const l = Math.floor(Math.random() * 30) + 35; // 35-65%
+    const s = Math.floor(Math.random() * 30) + 70; 
+    const l = Math.floor(Math.random() * 30) + 35; 
     colors.push(`hsl(${h}, ${s}%, ${l}%)`);
   }
   return colors;
 };
 
+/**
+ * Main Color Master Pro game component
+ */
 const App = () => {
+  // Game state management
   const [gameMode, setGameMode] = useState(null);
   const [targetColor, setTargetColor] = useState('');
   const [options, setOptions] = useState([]);
@@ -54,7 +66,9 @@ const App = () => {
   const [showAchievement, setShowAchievement] = useState(false);
   const [lastAchievement, setLastAchievement] = useState(null);
 
-  // Initialize game properly
+  /**
+   * Initializes game state when game mode is selected
+   */
   useEffect(() => {
     if (gameMode) {
       const initialColors = generateRandomColors(GAME_MODES[gameMode].colors);
@@ -65,7 +79,9 @@ const App = () => {
     }
   }, [gameMode]);
 
-  // Game timer
+  /**
+   * Manages game timer and handles game over condition
+   */
   useEffect(() => {
     if (isPlaying && timeLeft > 0) {
       const timer = setInterval(() => {
@@ -77,7 +93,9 @@ const App = () => {
     }
   }, [timeLeft, isPlaying]);
 
-  // Handle clicking outside game over modal
+  /**
+   * Handles click outside game over modal to close it
+   */
   useEffect(() => {
     const handleClickOutside = (event) => {
       const modal = document.querySelector('.game-over');
@@ -95,6 +113,10 @@ const App = () => {
     };
   }, [gameOver]);
 
+  /**
+   * Initializes a new game session
+   * @param {string} mode - Selected game mode
+   */
   const startGame = (mode) => {
     setGameMode(mode);
     setIsPlaying(true);
@@ -106,6 +128,9 @@ const App = () => {
     generateNewRound();
   };
 
+  /**
+   * Generates a new round with fresh colors
+   */
   const generateNewRound = () => {
     const newColors = generateRandomColors(GAME_MODES[gameMode].colors);
     const target = newColors[Math.floor(Math.random() * newColors.length)];
@@ -114,10 +139,14 @@ const App = () => {
     setShowTarget(true);
     
     if (gameMode === 'MEMORY') {
-      setTimeout(() => setShowTarget(false), 800); // Reduced to 0.8 seconds
+      setTimeout(() => setShowTarget(false), 800); 
     }
   };
 
+  /**
+   * Processes player's color selection and updates game state
+   * @param {string} color - Selected color value
+   */
   const handleGuess = (color) => {
     if (!isPlaying || gameOver) return;
 
@@ -134,28 +163,29 @@ const App = () => {
         setTimeLeft(GAME_MODES.CLASSIC.timeLimit);
       }
     } else {
-      // Failure handling for all game modes
       setStreak(0);
       
       switch(gameMode) {
         case 'CLASSIC':
-          // Immediate game over
           endGame();
           break;
         case 'SPEED':
-          // Reduce time and points as a penalty
           setScore(prev => Math.max(0, prev - 50));
           setTimeLeft(prev => Math.max(0, prev - 5));
-          generateNewRound(); // Continue the game
+          generateNewRound();
           break;
         case 'MEMORY':
-          // Immediately end the game for incorrect guess in memory mode
           endGame();
           break;
       }
     }
   };
 
+  /**
+   * Checks and awards achievements based on player performance
+   * @param {number} currentStreak - Current streak count
+   * @param {number} currentScore - Current score
+   */
   const checkAchievements = (currentStreak, currentScore) => {
     const newAchievements = [];
     
@@ -174,6 +204,9 @@ const App = () => {
     }
   };
 
+  /**
+   * Handles game over state and updates high scores
+   */
   const endGame = () => {
     setIsPlaying(false);
     setGameOver(true);
@@ -183,6 +216,9 @@ const App = () => {
     }));
   };
 
+  /**
+   * Renders the main game interface
+   */
   const renderGameUI = () => (
     <div className="game-content">
       <div className="game-header">
@@ -220,17 +256,22 @@ const App = () => {
           />
         ))}
       </div>
-
-      <button 
+      <div className='game-select'>
+        <button 
         data-testid="newGameButton"
         className="new-game-btn"
         onClick={() => setGameMode(null)}
       >
         Change Mode
       </button>
+      <button onClick={() => startGame(gameMode)}>Play Again</button>
+      </div> 
     </div>
   );
 
+  /**
+   * Renders the game mode selection interface
+   */
   const renderModeSelection = () => (
     <div className="mode-selection">
       <h2>Select Game Mode</h2>
@@ -248,7 +289,7 @@ const App = () => {
 
   return (
     <div className="app">
-      <h1>Color Master Pro</h1>
+      <h1>Color Master</h1>
       
       {gameMode ? renderGameUI() : renderModeSelection()}
 
